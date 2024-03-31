@@ -2,7 +2,7 @@ import torch
 import argparse
 import time
 from accelerate import PartialState
-from diffusers import StableDiffusionPipeline
+from diffusers import DiffusionPipeline
 
 def read_prompts_from_file(file_path):
     """read more prompts from file stream"""
@@ -25,13 +25,13 @@ def main():
     args = parse_args()
 
     model_id = "runwayml/stable-diffusion-v1-5"
-    pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+    pipe = DiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
     start_time = time.time()
     prompts = read_prompts_from_file('prompts.txt')
     if args.dist_inference:
         print(f'dist inference:')
         dist_state = PartialState()
-        pipe.to(dist_state)
+        pipe.to(dist_state.device)
         with dist_state.split_between_processes(prompts) as prompt:
             result = pipe(prompt).images[0]
             result.save(f'{args.img_save_dir}/result_{dist_state.process_index}_prompt.png')
