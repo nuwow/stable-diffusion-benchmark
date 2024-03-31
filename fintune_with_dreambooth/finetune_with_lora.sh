@@ -15,8 +15,9 @@ begin_time=`date +'%Y-%m-%d %H:%M:%S'`
 accelerate launch --mixed_precision="fp16" train_text_to_image_lora.py \
   --pretrained_model_name_or_path=$MODEL_NAME \
   --dataset_name=$DATASET_NAME \
+  --use_ema \
   --resolution=512 \
-  --center_crop \ 
+  --center_crop \
   --random_flip \
   --train_batch_size=1 \
   --gradient_accumulation_steps=4 \
