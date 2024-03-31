@@ -1,36 +1,54 @@
 import torch
 import argparse
 import time
+from accelerate import PartialState
 from diffusers import DPMSolverMultistepScheduler, StableDiffusionPipeline
 from diffusers.models.attention_processor import AttnProcessor2_0
 
-model_id = "runwayml/stable-diffusion-v1-5"
-pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
-pipe = pipe.to("cuda")
+def read_prompts_from_file(file_path):
+    """read more prompts from file stream"""
 
-pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
-# We enable the memory-efficient attention implementation in PyTorch 2.0 which
-# automatically enables several optimizations depending on the inputs and the GPU type.
-pipe.unet.set_attn_processor(AttnProcessor2_0())
 
-prompts = ["a photo of an astronaut riding a horse on mars",
-           'a beautiful sunset over a calm lake',
-           'a cat playing with a ball of yarn',
-           'A beautiful and powerful mysterious sorceress, smile, sitting on a rock, lightning magic, hat, detailed leather clothing with gemstones, dress, castle background, digital art, hyperrealistic, fantasy, dark art, artstation, highly detailed, sharp focus, sci-fi, dystopian, iridescent gold, studio lighting',
-           'A full body Batman character, realistic, ultra detailing, nice dynamic pose, 8K sharp focus, highly detailed, photorealism, armored luxury suit with white and gold chrome details and matte black',
-           'A beautiful painting of water spilling out of a broken pot, earth colored clay pot, vibrant background, by greg rutkowski and thomas kinkade, Trending on artstation, hyperrealistic, extremely detailed'
-           ]
+    with open(file_path, 'r') as file:
+        prompts = [line.strip() for line in file.readlines()]
+    return prompts
 
-batch_results = []
+def parse_args():
+    """ adapt for future new features"""
 
-start_time = time.time()
 
-for i, prompt in enumerate(prompts):
-    print(f'the {i} start process')
-    results = pipe(prompt=prompt, guidance_scale=7.5, num_inference_steps=25)
-    batch_results.append(results)
-    print(f'the {i} prompt findished process')
+    parser = argparse.ArgumentParser(description='inference args')
+    parser.add_argument('--dist_inference', type=bool, default=False, help='enable multi gpus inferencc')
+    args = parser.parse_args()
+    return args
 
-end_time = time.time()
-execute_cost = end_time - start_time
-print(f'execute cost time: {execute_cost} sec')
+def main():
+
+    args = parse_args()
+
+    model_id = "runwayml/stable-diffusion-v1-5"
+    pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+    start_time = time.time()
+    prompts = read_prompts_from_file('prompts.txt')
+    if args.dist_inference:
+        print(f'dist inference:')
+        dist_state = PartialState()
+        pipe.to(dist_state)
+        with dist_state.split_between_processes(prompts) as prompt:
+            result = pipe(prompt).images[0]
+            result.save(f'result_{dist_state.process_index}_prompt.png')
+    else:
+        print(f'singel gpu inference:')
+        pipe.to('cuda:0')
+        for i, prompt in enumerate(prompts):
+            print(f'the {i} start process')
+            result = pipe(prompt=prompt).images[0]
+            result.save(f'result_{i}_prompt.png')
+            print(f'the {i} prompt findished process')
+
+    end_time = time.time()
+    execute_cost = end_time - start_time
+    print(f'execute cost time: {execute_cost} sec')
+
+if __name__ == '__main__':
+    main()
