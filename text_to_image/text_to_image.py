@@ -2,12 +2,10 @@ import torch
 import argparse
 import time
 from accelerate import PartialState
-from diffusers import DPMSolverMultistepScheduler, StableDiffusionPipeline
-from diffusers.models.attention_processor import AttnProcessor2_0
+from diffusers import StableDiffusionPipeline
 
 def read_prompts_from_file(file_path):
     """read more prompts from file stream"""
-
 
     with open(file_path, 'r') as file:
         prompts = [line.strip() for line in file.readlines()]
@@ -16,9 +14,9 @@ def read_prompts_from_file(file_path):
 def parse_args():
     """ adapt for future new features"""
 
-
     parser = argparse.ArgumentParser(description='inference args')
     parser.add_argument('--dist_inference', type=bool, default=False, help='enable multi gpus inferencc')
+    parser.add_argument('--img_save_dir', type=str, default='output', help='inference images save directory')
     args = parser.parse_args()
     return args
 
@@ -36,14 +34,14 @@ def main():
         pipe.to(dist_state)
         with dist_state.split_between_processes(prompts) as prompt:
             result = pipe(prompt).images[0]
-            result.save(f'result_{dist_state.process_index}_prompt.png')
+            result.save(f'{args.img_save_dir}/result_{dist_state.process_index}_prompt.png')
     else:
         print(f'singel gpu inference:')
         pipe.to('cuda:0')
         for i, prompt in enumerate(prompts):
             print(f'the {i} start process')
             result = pipe(prompt=prompt).images[0]
-            result.save(f'result_{i}_prompt.png')
+            result.save(f'{args.img_save_dir}/result_{i}_prompt.png')
             print(f'the {i} prompt findished process')
 
     end_time = time.time()
