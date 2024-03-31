@@ -2,15 +2,17 @@
 
 source ../env.sh
 
-export MODEL_NAME='runwayml/stable-diffusion-v1-5'
-export DATASET_NAME='lambdalabs/pokemon-blip-captions'
-export OUTPUT_DIR='output/${SLURM_JOB_ID}'
+export http_proxy=http://u-cEoRwn:EDvFuZTe@172.16.4.9:3128
+export https_proxy=http://u-cEoRwn:EDvFuZTe@172.16.4.9:3128
+
+export MODEL_NAME="runwayml/stable-diffusion-v1-5"
+export DATASET_NAME="lambdalabs/pokemon-blip-captions"
+export OUTPUT_DIR="output/${SLURM_JOB_ID}"
 
 echo "Time to finetune:"
 begin_time=`date +'%Y-%m-%d %H:%M:%S'`
 
-
-acclerate launch --mixed_precision=fp16' train_text_to_image_lora.py \
+accelerate launch --mixed_precision="fp16" train_text_to_image_lora.py \
   --pretrained_model_name_or_path=$MODEL_NAME \
   --dataset_name=$DATASET_NAME \
   --resolution=512 \
@@ -27,7 +29,7 @@ acclerate launch --mixed_precision=fp16' train_text_to_image_lora.py \
 
 
 echo "Finished finetune"
-end_time=`date +'%Y-%m-%d %H:%M:%S'
+end_time=`date +'%Y-%m-%d %H:%M:%S'`
 
 # calculat cost time
 start_seconds=$(date --date="$begin_time" +%s);
