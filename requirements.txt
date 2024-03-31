@@ -1,0 +1,9 @@
+#torch==2.0.1+cu118
+transformers==4.27.1
+diffusers==0.20.1
+datasets==2.9.0
+accelerate==0.21.0
+datasets
+ftfy
+tensorboard
+Jinja2
