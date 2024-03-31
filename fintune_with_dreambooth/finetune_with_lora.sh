@@ -15,17 +15,17 @@ begin_time=`date +'%Y-%m-%d %H:%M:%S'`
 accelerate launch --mixed_precision="fp16" train_text_to_image_lora.py \
   --pretrained_model_name_or_path=$MODEL_NAME \
   --dataset_name=$DATASET_NAME \
-  --use_ema \
+  --caption_column="text" \
   --resolution=512 \
-  --center_crop \
   --random_flip \
   --train_batch_size=1 \
-  --gradient_accumulation_steps=4 \
+  --num_train_epochs=10 \
+  --checkpointing_steps=500 \
   --gradient_checkpointing \
-  --max_train_steps=15000 \
-  --learning_rate=1e-05 \
-  --max_grad_norm=1 \
+  --learning_rate=1e-04 \
   --lr_scheduler="constant" --lr_warmup_steps=0 \
+  --seed=42 \
+  --validation_prompt="cute dragon creature" \
   --output_dir=$OUTPUT_DIR
 
 
