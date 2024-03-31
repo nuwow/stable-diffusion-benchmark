@@ -1,0 +1,76 @@
+../env.sh: line 4: activate: No such file or directory
+The following values were not passed to `accelerate launch` and had defaults used instead:
+		More than one GPU was found, enabling multi-GPU training.
+		If this was unintended please pass in `--num_processes=1`.
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]`text_config_dict` is provided which will be used to initialize `CLIPTextConfig`. The value `text_config["id2label"]` will be overriden.
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  14%|█▍        | 1/7 [00:00<00:02,  2.11it/s]Loading pipeline components...:  29%|██▊       | 2/7 [00:01<00:04,  1.16it/s]Loading pipeline components...:  43%|████▎     | 3/7 [00:02<00:02,  1.57it/s]Loading pipeline components...:  57%|█████▋    | 4/7 [00:02<00:01,  1.76it/s]Loading pipeline components...:  29%|██▊       | 2/7 [00:04<00:12,  2.46s/it]Loading pipeline components...:  71%|███████▏  | 5/7 [00:04<00:02,  1.17s/it]`text_config_dict` is provided which will be used to initialize `CLIPTextConfig`. The value `text_config["id2label"]` will be overriden.
+Loading pipeline components...: 100%|██████████| 7/7 [00:05<00:00,  1.31it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:05<00:00,  1.27it/s]
+dist inference:
+Loading pipeline components...:  43%|████▎     | 3/7 [00:05<00:07,  1.80s/it]Loading pipeline components...:  71%|███████▏  | 5/7 [00:05<00:01,  1.20it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:05<00:00,  1.77it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:05<00:00,  1.17it/s]
+dist inference:
+Traceback (most recent call last):
+  File "text_to_image.py", line 52, in <module>
+    main()
+  File "text_to_image.py", line 34, in main
+    pipe.to(dist_state)
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/diffusers/pipelines/pipeline_utils.py", line 344, in to
+Traceback (most recent call last):
+  File "text_to_image.py", line 52, in <module>
+    main()
+  File "text_to_image.py", line 34, in main
+    pipe.to(dist_state)
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/diffusers/pipelines/pipeline_utils.py", line 344, in to
+        device_arg = torch.device(args[0]) if args[0] is not None else Nonedevice_arg = torch.device(args[0]) if args[0] is not None else None
+
+TypeErrorTypeError: : Device() received an invalid combination of arguments - got (PartialState), but expected one of:
+ * (torch.device device)
+      didn't match because some of the arguments have invalid types: (!PartialState!)
+ * (str type, int index)
+Device() received an invalid combination of arguments - got (PartialState), but expected one of:
+ * (torch.device device)
+      didn't match because some of the arguments have invalid types: (!PartialState!)
+ * (str type, int index)
+
+
+ERROR:torch.distributed.elastic.multiprocessing.api:failed (exitcode: 1) local_rank: 0 (pid: 667396) of binary: /home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/bin/python3.8
+Traceback (most recent call last):
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/bin/accelerate", line 8, in <module>
+    sys.exit(main())
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/accelerate/commands/accelerate_cli.py", line 45, in main
+    args.func(args)
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/accelerate/commands/launch.py", line 970, in launch_command
+    multi_gpu_launcher(args)
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/accelerate/commands/launch.py", line 646, in multi_gpu_launcher
+    distrib_run.run(args)
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/torch/distributed/run.py", line 785, in run
+    elastic_launch(
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/torch/distributed/launcher/api.py", line 134, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/torch/distributed/launcher/api.py", line 250, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+text_to_image.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2024-03-31_19:16:32
+  host      : paraai-n32-h-01-agent-66.paraai-n32-h-01.com
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 667397)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2024-03-31_19:16:32
+  host      : paraai-n32-h-01-agent-66.paraai-n32-h-01.com
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 667396)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
