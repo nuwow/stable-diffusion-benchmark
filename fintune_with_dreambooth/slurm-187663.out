@@ -1,0 +1,45 @@
+Time to finetune:
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_processes` was set to a value of `1`
+	`--num_machines` was set to a value of `1`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+03/31/2024 16:50:39 - INFO - __main__ - Distributed environment: NO
+Num processes: 1
+Process index: 0
+Local process index: 0
+Device: cuda
+
+Mixed precision type: fp16
+
+{'prediction_type', 'sample_max_value', 'timestep_spacing', 'thresholding', 'rescale_betas_zero_snr', 'clip_sample_range', 'dynamic_thresholding_ratio', 'variance_type'} was not found in config. Values will be initialized to default values.
+{'latents_std', 'force_upcast', 'scaling_factor', 'latents_mean'} was not found in config. Values will be initialized to default values.
+{'dropout', 'time_cond_proj_dim', 'resnet_time_scale_shift', 'use_linear_projection', 'mid_block_type', 'mid_block_only_cross_attention', 'time_embedding_type', 'encoder_hid_dim', 'upcast_attention', 'conv_in_kernel', 'addition_embed_type', 'time_embedding_act_fn', 'encoder_hid_dim_type', 'class_embeddings_concat', 'conv_out_kernel', 'addition_embed_type_num_heads', 'num_class_embeds', 'timestep_post_act', 'class_embed_type', 'projection_class_embeddings_input_dim', 'cross_attention_norm', 'transformer_layers_per_block', 'reverse_transformer_layers_per_block', 'resnet_skip_time_act', 'dual_cross_attention', 'addition_time_embed_dim', 'attention_type', 'num_attention_heads', 'resnet_out_scale_factor', 'only_cross_attention', 'time_embedding_dim'} was not found in config. Values will be initialized to default values.
+/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/diffusers/models/attention_processor.py:1851: FutureWarning: Using LoRAAttnProcessor is deprecated. Please use the PEFT backend for all things LoRA. You can install PEFT by running `pip install peft`.
+  deprecate("LoRAAttnProcessor", "0.30.0", deprecation_message, standard_warn=False)
+/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/diffusers/models/lora.py:208: FutureWarning: `LoRALinearLayer` is deprecated and will be removed in version 1.0.0. Use of `LoRALinearLayer` is deprecated. Please switch to PEFT backend by installing PEFT: `pip install peft`.
+  deprecate("LoRALinearLayer", "1.0.0", deprecation_message)
+Traceback (most recent call last):
+  File "train_text_to_image_lora.py", line 950, in <module>
+    main()
+  File "train_text_to_image_lora.py", line 558, in main
+    dataset = load_dataset(
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/datasets/load.py", line 1735, in load_dataset
+    builder_instance = load_dataset_builder(
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/datasets/load.py", line 1493, in load_dataset_builder
+    dataset_module = dataset_module_factory(
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/datasets/load.py", line 1213, in dataset_module_factory
+    raise FileNotFoundError(
+FileNotFoundError: Couldn't find a dataset script at /home/bingxing2/home/scx6002/wukun/test/stable-diffusion-benchmark/fintune_with_dreambooth/lambdalabs/pokemon-blip-captions/pokemon-blip-captions.py or any data file in the same directory. Couldn't find 'lambdalabs/pokemon-blip-captions' on the Hugging Face Hub either: FileNotFoundError: Dataset 'lambdalabs/pokemon-blip-captions' doesn't exist on the Hub. If the repo is private, make sure you are authenticated with `use_auth_token=True` after logging in with `huggingface-cli login`.
+Traceback (most recent call last):
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/bin/accelerate", line 8, in <module>
+    sys.exit(main())
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/accelerate/commands/accelerate_cli.py", line 45, in main
+    args.func(args)
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/accelerate/commands/launch.py", line 979, in launch_command
+    simple_launcher(args)
+  File "/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/lib/python3.8/site-packages/accelerate/commands/launch.py", line 628, in simple_launcher
+    raise subprocess.CalledProcessError(returncode=process.returncode, cmd=cmd)
+subprocess.CalledProcessError: Command '['/home/bingxing2/home/scx6002/.conda/envs/test_sd_benchmark/bin/python3.8', 'train_text_to_image_lora.py', '--pretrained_model_name_or_path=runwayml/stable-diffusion-v1-5', '--dataset_name=lambdalabs/pokemon-blip-captions', '--caption_column=text', '--resolution=512', '--random_flip', '--train_batch_size=1', '--num_train_epochs=10', '--checkpointing_steps=500', '--gradient_checkpointing', '--learning_rate=1e-04', '--lr_scheduler=constant', '--lr_warmup_steps=0', '--seed=42', '--validation_prompt=cute dragon creature', '--output_dir=output/187663']' returned non-zero exit status 1.
+Finished finetune
+Cost time 19s
