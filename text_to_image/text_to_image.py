@@ -36,6 +36,7 @@ def main():
         nums_prompts = len(prompts)
         with dist_state.split_between_processes(prompts) as prompt:
             nums_prompts -= 1
+            print(prompt)
             result = pipe(prompt).images[0]
             result.save(f'{args.img_save_dir}/result_{dist_state.process_index}_{nums_prompts}_prompt.png')
     else:
