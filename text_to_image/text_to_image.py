@@ -27,22 +27,21 @@ def main():
     model_id = "runwayml/stable-diffusion-v1-5"
     pipe = DiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
     start_time = time.time()
-    prompts = read_prompts_from_file('prompts.txt')
+    datas = read_prompts_from_file('prompts.txt')
     if args.dist_inference:
         print(f'dist inference:')
         dist_state = PartialState()
         pipe.to(dist_state.device)
         #TODO: solve ranks < prompts exist image override problem
-        nums_prompts = len(prompts)
-        with dist_state.split_between_processes(prompts) as prompt:
-            nums_prompts -= 1
-            print(prompt)
-            result = pipe(prompt).images[0]
-            result.save(f'{args.img_save_dir}/result_{dist_state.process_index}_{nums_prompts}_prompt.png')
+        with dist_state.split_between_processes(datas,) as prompts:
+            for i, prompt in enumerate(prompts):
+                print(f'the {i} prompt: {prompt}')
+                result = pipe(prompt).images[0]
+                result.save(f'{args.img_save_dir}/result_{dist_state.process_index}_{i}_prompt.png')
     else:
         print(f'singel gpu inference:')
         pipe.to('cuda:0')
-        for i, prompt in enumerate(prompts):
+        for i, prompt in enumerate(datas):
             print(f'the {i} start process')
             result = pipe(prompt=prompt).images[0]
             result.save(f'{args.img_save_dir}/result_{i}_prompt.png')
